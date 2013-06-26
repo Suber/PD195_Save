@@ -1,0 +1,16 @@
+#
+# SI
+*.I[AM][BD]
+*.P[FR]I
+*.P[OSR]
+*.SearchResults
+*.WK3
+*.CF3
+
+# UV3
+lst/
+list/
+obj/
+*.BAK
+*.map
+*.opt

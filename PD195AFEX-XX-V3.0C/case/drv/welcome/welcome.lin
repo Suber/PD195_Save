@@ -1,0 +1,9 @@
+NOOVERLAY
+NODEFAULTLIBRARY
+ 
+
+/**************************Rcode *********************************************/
+SEGMENTS(?PR?CODEDISPSTART(C:0x9800),CODEDISPSTART,DELAY_MS,HARD_DEAL,HD_LCD,?FD?HD_LCDData?*,?HC?HD_LCD(^C:0x9fff))
+//SEGMENTS(?PR?CODEDISPSTART(C:0x9800),CODEDISPSTART,HD_LCD,?HC?HD_LCD(^C:0x9fff))
+
+

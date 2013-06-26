@@ -1,0 +1,61 @@
+CASE
+NOOVERLAY
+NOJMPTAB
+NODEFAULTLIBRARY
+BankArea(0600H,1000H) 
+ 
+CLASSES(SROM(0xFEA000-0xFEAFFF))
+/**************************Rcode *********************************************/
+SEGMENTS(UI_API_TB(0xff3400),API30,API30_UI_DRV,DELAY_MS,HARD_DEAL,HARD_LOGICAL,UI_RCODE_1,UI_RCODE_2,?HC?HARD_INITDATA?*,HARD_INIT)  //RESERVE(0xff37ff-0xff37ff)
+/*SEGMENTS(UI_RCODE_6(0xff3800))  RESERVE(0xff3bff-0xff3bff)*/
+
+
+/**************************Rcode2 ********************************************/
+
+/**************************Rdata *********************************************/
+SEGMENTS(UI_GLOBAL_DATA(0x1400))   
+SEGMENTS(DISPLAY_BUFF(0x2400))										   
+
+
+/**************************BnkA **********************************************/
+SEGMENTS(BAH_CLRS(B0:0x600), ?PR?BAC_CLRS(B0:))                      RESERVE(B0:0x7ff-B0:0x7ff)
+SEGMENTS(BAH_PSDI(B1:0x600),  ?PR?BAC_PSDI(B1:))                     RESERVE(B1:0x7ff-B1:0x7ff)
+SEGMENTS(BAH_DW1(B2:0x600),  ?PR?BAC_DW1(B2:) )                       RESERVE(B2:0x7ff-B2:0x7ff)
+SEGMENTS(BAH_IS_NSM(B3:0x600),?HC?IS_NSM_CONST?*(B3:),?PR?IS_NSM(B3:)) RESERVE(B3:0x7ff-B3:0x7ff)
+//SEGMENTS(BAH_Thai(B4:0x600),?PR?BAC_Thai(B4:))                        RESERVE(B4:0x7ff-B4:0x7ff)
+SEGMENTS(BAH_TurnArabicToUn(B5:0x600),?PR?BAC_TurnArabicToUn(B5:))    RESERVE(B5:0x7ff-B5:0x7ff)
+/*SEGMENTS(BAH_MSG(B6:0x600),?HC?BAS_MSG?*(B3:),?PR?BAC_MSG(B6:))      RESERVE(B6:0x8ff-B6:0x8ff)
+
+                                                 
+/**************************BnkB **********************************************/
+SEGMENTS(BBH_IE(B0:0x800), ?HC?BBS_IE?*(B0:),?PR?BBC_IE(B0:))  RESERVE(B0:0xfff-B0:0xfff) 
+SEGMENTS(BBH_DW3(B2:0x800), ?PR?BBC_DW3(B2:))   RESERVE(B2:0xfff-B2:0xfff)
+SEGMENTS(BBH_PUTS(B3:0x800), ?PR?BBC_PUTS(B3:))  RESERVE(B3:0xfff-B3:0xfff)      
+SEGMENTS(BBH_HFUN(B4:0x800), ?PR?BBC_HFUN(B4:) )  RESERVE(B4:0xfff-B4:0xfff)
+SEGMENTS(BBH_GSL(B5:0x800), ?PR?BBC_GSL(B5:))     RESERVE(B5:0xfff-B5:0xfff) 
+SEGMENTS(BBH_ARABIC(B6:0x800),?HC?BBD_ARABIC_CONST*(B6:),?PR?BBC_ARABIC(B6:))   RESERVE(B6:0xfff-B6:0xfff)                             
+SEGMENTS(BBH_SubArabic(B7:0x800), ?PR?BBC_SubArabic(B7:))   RESERVE(B7:0xfff-B7:0xfff)
+SEGMENTS(BBH_GSLExt(B8:0x800),?PR?BBC_GSLExt(B8:))  RESERVE(B8:0xfff-B8:0xfff)
+SEGMENTS(BBH_Thai(B9:0x800),?PR?BBC_Thai(B9:))	RESERVE(B9:0xfff-B9:0xfff)
+/**************************BnkA Data *****************************************/
+
+/**************************BnkA Data******************************************/
+
+SEGMENTS(?ED?BAD_TurnArabicToUn?*(0x400)[!])		/*data bank 0  */
+/*SEGMENTS(?ED?BAD_MSG?*(0x400)[!])		/*data bank 0  */
+SEGMENTS(?ED?BAD_PSDI?*(0x400)[!])		/*data bank 0  */
+/**************************BnkB Data******************************************/
+SEGMENTS(?ED?BBD_IE?*(0x480)[!])		/*data bank 0  */
+
+
+/***************** SEGMENTS for tools  ****************************************/
+
+/************************** INfo Segment *************************************/ 
+SEGMENTS(UI_INFO(0xFF0000))
+SEGMENTS(?C_INITEDATA(0xFED000))
+SEGMENTS(?BANK?SELECT(C:0xFFF0))  /*No need */
+
+/************************************************************************** 
+ * Locate in other modules
+ *************************************************************************/
+

@@ -1,0 +1,229 @@
+/*
+********************************************************************************
+*                       ACTOS
+*                  driver demo
+*
+*                (c) Copyright 2002-2003, Actions Co,Ld.
+*                        All Right Reserved
+*
+* File   : UI_SpecialFuncs.msa
+* By     : Rcmai
+* Version: 1> v1.00     first version     date
+********************************************************************************
+*/
+
+#include "display.h"
+#include "Drv_S0724.h"
+
+        module  UI_SpecialFuncs
+
+        //public  BlackCharToColor
+        //public  RectBuffFillColor
+        public  sUIPutOutChar_cal
+        //extern  Hdrv_GetBuffData
+        extern  Hdrv_SetWindow
+        extern  Hdrv_SetFontWindow
+        extern  CharPointBuffer
+        extern  DisplayBuffer
+        extern  region
+        //extern  dc
+        //extern  charinvflag
+        //extern  charclarity
+        //extern  putCharChFlag     
+        extern  CharWidth               
+        extern  TextPage
+        extern  TextColumn
+        extern  CurrentPg
+        extern  AscFontSmall
+
+        rseg    UI_RCODE
+
+//charpoint_tempbuf   defs 32
+//WidthSave           defb 0
+//page_count          defb 0x02
+//shift_count         defb 0
+//dc_Inv_bak:
+//PenColor_Inv_bak    defs 4
+//BackGDColor_Inv_bak defs 4
+
+//[1]==================================================
+// void BlackCharToColor(int cnt,char *SoureBufPos)
+//直接传递的参数
+//  int cnt : 象素的列数，字库有8列和16列两种类型的点阵，对用寄存器de 
+//  char *SoureBufPos: 要转换的源buf首址，对用寄存器bc
+
+//用公共变量传递的参数
+//  DisplayBuffer:   显示缓冲区
+
+//功能
+//  根据字库把原来黑白字模换成彩色
+//说明：
+//  用到 de 传送参数，hl,bc作运算，没保护，用到IX已保护        
+//-----------------------------------------------------
+//BlackCharToColor:
+//
+//            ret
+//=====================================================
+
+//[2]==================================================
+//******************************* 
+
+//              ret         
+//*******************************    
+//=====================================================
+// void RectBuffFillColor(int pixelcnt)
+//直接传递的参数
+//  int pixelcnt: 要填充的象素个数
+//
+//用公共变量传递的参数
+//  DisplayBuffer:   显示缓冲区
+//
+//功能
+//  把暂存显示Buffer中的 pixelcnt 个象素单元填为画笔颜色
+//
+//说明：
+//     
+//-----------------------------------------------------
+//选用方案4(ok,用10767 个cycles 约0.46ms/page) 这个最优
+//RectBuffFillColor:
+//   
+//        ret
+        
+//*********************************************************************************
+//set the region all screen
+
+//*********************************************************************************
+//sUI_setregion_allscr:
+//            xor     a
+//            ld      (UpdStartColumnL),a
+//            ld      (CurrentPg),a
+//            ld      a,10h
+//            ld      (UpdStartColumnH),a
+//            //ybfu
+//            ld      a,DisplaySuppPage
+//            ld      (UpdPgNum),a
+//            //ybfu
+//            ld      a,Displaylength
+//            ld      (UpdWidth),a
+//            ret
+//=======================================================
+/*
+set data to displaybuff
+//作为内部函数调用, 输入参数:h=当前页,l=高度,b=当前列,c=列数,de=要显示数据地址
+*/
+//=======================================================
+sUIPutOutChar_cal:
+	          push    ix
+              push    de
+              push    hl
+              push    bc
+
+              //输出参数h=当前页 b=当前列
+              ld      a,(TextPage)
+              srl     a                       //除以8
+              srl     a
+              srl     a
+              ld      h,a
+              ld      a,(TextColumn)
+              ld      b,a
+            
+              push    de
+              pop     ix  
+              //ld      ix,CharPointBuffer 
+              ld      a,(ix+32)      
+              //ld      (CharWidth),a    //字体宽度
+              or      a
+              jr      z,sUIPutOutCharEnd
+              ld      c,a
+            
+              ld      a,b
+              //ybfu
+              cp      Displaylength                 //当前位置为最后显示位置加1，可以为128
+              jr      nc,sUIPutOutCharEnd    //若出界，则退出
+              add     a,c
+              //ybfu
+              cp      Displaylength+1                 //最后一个字符为120+8=128,但实际上只放了120~127
+              jr      c,ShowPictureConti  //当前值+输出列数最大等于128,display left colume
+              //ybfu
+              ld      a,Displaylength
+              sub     b
+              ld      c,a
+ShowPictureConti:
+	            ld      a,(AscFontSmall)
+              //ld      a,0x02                 //l 高度 16
+              ld      l,a
+              call    sPutDataSub1         //输入参数b=当前列，c=要送列数，ix=范围结构region_t的指针，h=当前页位置,de=要送数据地址
+lsPutMultiPageDataLoop:
+              ld      a,l                 //高度
+              dec     a
+              jr      z,sUIPutOutCharEnd
+              ld      l,a
+              ld      a,h                 //当前页
+              cp      DisplaySuppPage-1
+              jr      z,sUIPutOutCharEnd
+              inc     a
+              ld      h,a
+
+              push    hl                  //加数据地址
+              ld      a,(CharWidth)              //update宽度
+              ld      l,a
+              ld      h,0
+              add     hl,de
+              push    hl
+              pop     de
+              pop     hl
+
+              call    sPutDataSub1         //输入参数b=当前列，c=要送列数，ix=范围结构region_t的指针，h=当前页位置,de=要送数据地址
+              jr      lsPutMultiPageDataLoop
+sUIPutOutCharEnd:
+              ld       a,(ix+32)
+              ld       c,a
+              ld       a,(TextColumn)
+              add      a,c 
+              ld       (TextColumn),a
+              
+             
+              pop      bc
+              pop      hl
+              pop      de
+              pop      ix
+              ret
+
+//--------------------------------------------
+//ybfu  这里的函数只支持<=32行的情况，屏幕增大要修改        large
+sPutDataSub1:                        //输入参数b=当前列，c=要送列数，ix=范围结构region_t的指针，h=当前页位置,de=要送数据地址
+            push    hl
+            push    bc
+            push    de
+            
+            ld      a,h                 //当前页位置
+            cp      8                           //2
+            jr      nc,lsPutDataOutOfPage       //delete by joy.chen     
+            
+            ld      hl,DisplayBuffer                                    
+            cp      0            
+            jr      z,MapColumn                                   
+            push    bc
+            push    de
+            ld      de,Displaylength 
+            ld      b,a
+lsGetMapStartAddr:
+            add     hl,de
+            djnz    lsGetMapStartAddr
+            pop     de
+            pop     bc     
+MapColumn:
+            ld      a,c                     //a先保存 列数
+            ld      c,b                     //b=当前列
+            ld      b,0
+            add     hl,bc                   //c=屏幕某列+某page起始地址=要埴内空的开始地址
+            ex      de,hl                   //原de=要送数据地址
+            ld      c,a
+            ldir
+lsPutDataOutOfPage:
+            pop     de
+            pop     bc
+            pop     hl
+            ret
+//=====================================================
+end

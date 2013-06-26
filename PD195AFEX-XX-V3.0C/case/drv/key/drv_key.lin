@@ -1,0 +1,40 @@
+CASE
+NOOVERLAY
+NOJMPTAB
+NODEFAULTLIBRARY
+BankArea (0600H,1000H) 
+ 
+
+/**************************Rcode *********************************************/
+SEGMENTS(API30(C:0x200),?HC?KEY_RCODE,?PR?KY_COM)	//0x200~0x400, 0.5k
+SEGMENTS(?PR?KY_USB(0xff6c00),?PR?KY_IIC_DRV,?PR?KY_GSENSOR,API30_KEY_DRV,?PR?KY_CARD)	//0xff6c00~0xff7000, 1k
+
+/**************************Rcode2 ********************************************/
+/**************************Rdata *********************************************/
+SEGMENTS(?ED?KEY_RCODE(0x14b0),?ED?KEY_CHARGE) 
+
+/**************************BnkA **********************************************/
+SEGMENTS(BAH_IE(B0:0x0600),?PR?BAC_IE0(B0:),?PR?BAC_POWERON(B0:),?PR?BAC_IE1(B0:))
+SEGMENTS(BAH_CHARGE(B1:0x600),?PR?BAC_CHARGE(B1:)) 
+SEGMENTS(BAH_STATE(B2:0x600),?PR?BAC_KT(B2:),?PR?BAC_STATE(B2:)) 
+SEGMENTS(BAH_GSENSOR1(B3:0x600),?PR?KY_GSENSOR1(B3:)) 
+SEGMENTS(BAH_GSENSOR2(B4:0x600),?PR?KY_GSENSOR2(B4:)) 
+SEGMENTS(BAH_GSENSOR3(B5:0x600),?PR?KY_GSENSOR3(B5:)) 
+
+ 
+/**************************BnkB **********************************************/
+
+ 
+/**************************BnkA Data *****************************************/
+ 	   
+/**************************BnkB Data******************************************/
+
+
+/***************** SEGMENTS for tools ****************************************/
+
+/************************** INfo Segment *************************************/ 
+SEGMENTS(DRV_INFO(0xFF0000))
+SEGMENTS(?BANK?SELECT(C:0xFFF0))  /*No need */
+SEGMENTS(?C_INITEDATA(0xFED000))
+
+

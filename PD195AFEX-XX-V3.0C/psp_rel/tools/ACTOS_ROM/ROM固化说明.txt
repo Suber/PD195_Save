@@ -1,0 +1,19 @@
+1)actos_rom.rom   为从0xFFD000开始到0xFFE8FF结束的bin内容
+2) nand_rom.rom   为从0xFFE900开始到0xFFFFFF结束的bin内容
+
+注意：rom2_all.rom 是actos_rom.rom+nand_rom.rom的最终文件，每次修改了上面2个rom,记得运行辟出build_rom2all.bat
+
+
+
+
+
+
+////////////history/////////////////////////////////////////////////////
+actos_rom.rom  2010.1.20 修改actos后台接口，增加timer到6个 by zzhhust
+actos_rom.rom  2010.1.23 USB插线消息宏fix                  by zzhhust
+增加build_rom2all.bat                                      by zzhhust
+nand_rom.rom  2010.1.27  增加清watdog的函数                by neil
+nand_rom.rom  2010.2.3   修改切换zone表时的一个bug         by neil
+actos_rom.rom  2010.6.8  B版(修改2个Byte)                  by zzhhust
+nand_rom.rom  2010.6.8   B版                               by neil
+nand_rom.rom  2010.6.8   调整固化代码引用地址为常驻地址    by neil
