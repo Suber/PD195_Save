@@ -174,18 +174,6 @@ uint16 Pedo_record_save(uint8 mode)
     date_t date;
     time_t time;
     uint8 Pedo_Record_buff[PEDO_RECORD_MAX*sizeof(Pedo_Record_t)];
-
-    if(!DRV_ActiveUD(DISK_C, MODE_SLOW))
-    {
-        return 0;
-    }
-
-     
-    if (!DRV_ActiveDrive('C', MODE_SLOW))
-    {
-        return 0;
-    }
-    
     
     TM_GetDate(&date, 0);
     TM_GetTime(&time);	
